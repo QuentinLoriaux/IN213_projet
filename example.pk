@@ -1,0 +1,35 @@
+# TITLE "Still Alive"
+# COMPOSER "Jonathan Coulton"
+# ARRANGER "Jarret Heather"
+# BPM 120
+
+// Commentaire très perspicace
+
+(* Création de variables réutilisables *)
+
+
+instrument piano = "Yamaha_C3_Grand_Piano.sf2";
+
+chord accord1 (o1a+1 o2b2 o4c-3);
+chord accord2 (o1a+1 o2b2 o4c-3);
+
+phrase melodie1 {
+    accord1 o2a+1 o2b+1 o3g1
+    accord2 r1 r1 r1
+}
+
+sheet mainDroite (piano) {
+    write r1 melodie1 r1 accord1;
+    repeat(melodie1, 2);
+    write accord2 accord2 accord2;
+}
+
+
+sheet mainGauche (piano) {
+    write accord2 r1 melodie1;
+}
+
+main {
+    play(mainGauche, mainDroite);
+    play(mainGauche);
+}

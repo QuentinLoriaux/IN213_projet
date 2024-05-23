@@ -4,13 +4,21 @@
 *)
 
 
+type description = 
+  | DTitle of string                               (* 1, 2, 3 *)
+  | DComposer of string                                 (* 1, 2, 3 *)
+  | DArranger of string                                 (* 1, 2, 3 *)
+  | D_BPM of int  
+;;
+
+type musNote = int * string * string * int;;
+type musChord = musNote | musNote * musChord;; (* Simultaneously played *)
+type musPhrase = musChord | musChord * musPhrase;; (* Sequentially played *)
+type instrument = string;;
+type musSheet = instrument * (musPhrase)
 
 (* Expressions : *)
 type expr =
-  | ETitle of string                               (* 1, 2, 3 *)
-  | EComposer of string                                 (* 1, 2, 3 *)
-  | EArranger of string                                 (* 1, 2, 3 *)
-  | E_BPM of int                                 (* 1, 2, 3 *)
   
   | ESheet of ()
   | ENote of (int * string * string * int)                                 (* 1, 2, 3 *)

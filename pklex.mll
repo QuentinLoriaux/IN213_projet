@@ -73,8 +73,8 @@ let newline = ('\010' | '\013' | "\013\010")
 (* Comment gérer les notes de forme : 1a2+  ? *)
 
 rule lex = parse
-    (' ' | '\t')
-      { lex lexbuf }     (* sauter les espaces *)
+    (' ' | '\t' | '|')
+      { lex lexbuf }     (* sauter les espaces et mesures | *)
   | newline
       { incr_line_number lexbuf ;
         lex lexbuf } (* sauter les retours a la ligne + garde trace de la ligne courante. *)
@@ -82,7 +82,7 @@ rule lex = parse
       { INT(int_of_string lxm) }
   | ('o' ['0'-'9'])? (['a'-'g']|'r') ('+'|'-')? ['0'-'9']* as lxm
     {NOTE(lxm) } (* Note de la forme : o2a+16 : octave, note, dièse/bemol, durée *)
-  | [ 'A'-'Z' 'a'-'z' ] [ 'A'-'Z' 'a'-'z' ]+ as lxm
+  | [ 'A'-'Z' 'a'-'z' ] [ 'A'-'Z' 'a'-'z' ]+ ['0'-'9']* as lxm
       { match lxm with
           "TITLE" -> TITLE
         | "COMPOSER" -> COMPOSER
