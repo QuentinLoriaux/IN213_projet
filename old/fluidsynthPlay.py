@@ -45,12 +45,12 @@ print(sys.argv[0])
 
 fs = fluidsynth.Synth()
 fs.start( driver="alsa", midi_driver="alsa_seq")  
-fs.setting('synth.gain', 10.0)
+fs.setting('synth.gain', 7.0)
 
 # ======= Choix de l'instrument =======
 
 instrument = sys.argv[2]
-sfid = fs.sfload('./soundfonts/Yamaha_C3_Grand_Piano.sf2')  
+sfid = fs.sfload('./soundfonts/Salsa_Brass.sf2')  
 if (os.path.exists(instrument)):
     print("instrument : " , instrument)
     sfid = fs.sfload(instrument)
