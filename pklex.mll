@@ -80,8 +80,8 @@ rule lex = parse
         lex lexbuf } (* sauter les retours a la ligne + garde trace de la ligne courante. *)
   | ['0'-'9']+ as lxm
       { INT(int_of_string lxm) }
-  | ('o' ['0'-'9'])? (['a'-'g']|'r') ('+'|'-')? ['0'-'9']* as lxm
-    {NOTE(lxm) } (* Note de la forme : o2a+16 : octave, note, dièse/bemol, durée *)
+  | ('o' ['0'-'9'])? (['a'-'g']|'r') ('+'|'-')? ['0'-'9']? as lxm
+    {NOTE(lxm) } (* Note de la forme : o2a+3 : octave, note, dièse/bemol, durée *)
   | [ 'A'-'Z' 'a'-'z' ] [ 'A'-'Z' 'a'-'z' ]+ ['0'-'9']* as lxm
       { match lxm with
           "TITLE" -> TITLE
@@ -93,11 +93,10 @@ rule lex = parse
         | "phrase" -> PHRASE
         | "sheet" -> SHEET
         | "main" -> MAIN
-        | "write" -> THEN
-        | "repeat" -> REPEAT
-        | "play" -> PlAY
+        | "play" -> PLAY
         | "print" -> PRINT
         | _ -> IDENT(lxm) } (*au moins 2 caractères*)
+  | "*"   { REPEAT }
   | "="   { EQUAL }
   | '('   { LPAR }
   | ')'   { RPAR }
@@ -110,7 +109,7 @@ rule lex = parse
             STRING (get_stored_string()) }
   | "#"   { SHARP }
   | "//"  { in_cpp_comment lexbuf }
-  | "/*"  { in_c_comment lexbuf }
+  | "\'\'\'"  { in_long_comment lexbuf }
   | eof   { raise Eoi }
   | _     { raise (LexError (lexbuf.Lexing.lex_start_p,
                              lexbuf.Lexing.lex_curr_p)) }
@@ -145,9 +144,9 @@ and in_cpp_comment = parse
   | _    { in_cpp_comment lexbuf }
   | eof  { raise Eoi }
 
-and in_c_comment = parse
-    "*/" { lex lexbuf }
-  | _    { in_c_comment lexbuf }
+and in_long_comment = parse
+    "\'\'\'" { lex lexbuf } 
+  | _    { in_long_comment lexbuf }
   | eof  { raise Eoi }
 
 and skip_to_eol = parse

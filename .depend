@@ -1,0 +1,28 @@
+pkast.cmo :
+pkast.cmx :
+pkfluidapi.cmo : \
+    pkast.cmo
+pkfluidapi.cmx : \
+    pkast.cmx
+pklex.cmo : \
+    pkparse.cmi
+pklex.cmx : \
+    pkparse.cmx
+pkparse.cmo : \
+    pkast.cmo \
+    pkparse.cmi
+pkparse.cmx : \
+    pkast.cmx \
+    pkparse.cmi
+pkparse.cmi : \
+    pkast.cmo
+pkplay.cmo : \
+    pkparse.cmi \
+    pklex.cmo \
+    pkfluidapi.cmo \
+    pkast.cmo
+pkplay.cmx : \
+    pkparse.cmx \
+    pklex.cmx \
+    pkfluidapi.cmx \
+    pkast.cmx

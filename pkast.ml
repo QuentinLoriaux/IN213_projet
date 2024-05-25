@@ -4,103 +4,67 @@
 *)
 
 
-type description = 
-  | DTitle of string                               (* 1, 2, 3 *)
-  | DComposer of string                                 (* 1, 2, 3 *)
-  | DArranger of string                                 (* 1, 2, 3 *)
-  | D_BPM of int  
-;;
+(* type MusNote = int * string * string * int;;
+type MusChord = MusNote list;; (* Simultaneously played *)
 
-type musNote = int * string * string * int;;
-type musChord = musNote | musNote * musChord;; (* Simultaneously played *)
-type musPhrase = musChord | musChord * musPhrase;; (* Sequentially played *)
-type instrument = string;;
-type musSheet = instrument * (musPhrase)
+type Sound = MusNote | MusChord;;
+
+type MusPhrase = Sound list;; (* Sequentially played *)
+type MusSheet = instrument * MusPhrase;; *)
 
 (* Expressions : *)
 type expr =
+  | ETitle of string                              
+  | EComposer of string                                
+  | EArranger of string                                
+  | E_BPM of int    
+  | EInstrument of string
+  | ENote of string
+  | EChord of expr list
+  | EPhrase of expr list
+  | ESheet of (expr * expr)
+  | EIdent of string
+  | ELet of (string * expr)                        
+  | ERepeat of  (expr * int)
+  | EPrint of string
+  | EPlay of expr list
+;;  
   
-  | ESheet of ()
-  | ENote of (int * string * string * int)                                 (* 1, 2, 3 *)
-  | EChord of (string * expr * expr)                                 (* 1, 2, 3 *)
-  | EChord of (string * expr * expr)                                 (* 1, 2, 3 *)
-  
-  | EPrint of expr
-  | EPlay of (expr * expr)     
-  
-  
-  (* 1, 2, 3 *)
-  | EBool of bool                               (* true, false *)
-  | EString of string                           (* "hello" *)
-  | EIdent of string                            (* x, toto, fact *)
-  | EApp of (expr * expr)                       (* application e1 e2 *)
-  | EMonop of (string * expr)                   (* -e *)
-  | EBinop of (string * expr * expr)            (* e1 + e2 *)
-  | EIf of (expr * expr * expr)                 (* if e1 then e2 else e3 *)
-  | EFun of (string * expr)                     (* fun v -> e *)
-  | ELet of (string * expr * expr)              (* let x = e1 in e2 *)
-  | ELetrec of (string * string * expr * expr)  (* let rec f x = e1 in e2 *)
-;;
 
-
-type expr =
-  | EInt of int                                 (* 1, 2, 3 *)
-  | EBool of bool                               (* true, false *)
-  | EString of string                           (* "hello" *)
-  | EIdent of string                            (* x, toto, fact *)
-  | EApp of (expr * expr)                       (* application e1 e2 *)
-  | EMonop of (string * expr)                   (* -e *)
-  | EBinop of (string * expr * expr)            (* e1 + e2 *)
-  | EIf of (expr * expr * expr)                 (* if e1 then e2 else e3 *)
-  | EFun of (string * expr)                     (* fun v -> e *)
-  | ELet of (string * expr * expr)              (* let x = e1 in e2 *)
-  | ELetrec of (string * string * expr * expr)  (* let rec f x = e1 in e2 *)
-;;
-
-
-(* Extrait les parametres d'une fonction anonyme
-          (fun x1 -> fun x2 -> ... -> e)
-   et produit
-          ([x1; x2; ...], e)
- *)
-let params_body e =
-  let rec un_body params expr = match expr with
-  | EFun( p, e) -> un_body (p::params) e
-  | e -> (List.rev params, e) in
-  un_body [] e
-;;
-
-
-(* Note : dans le printf d'OCaml, le format %a
-   correspond a 2 arguments consecutifs :
-        - une fonction d'impression de type (out_channel -> 'a -> unit)
-        - un argument a imprimer, de type 'a
-   Voir le cas EApp ci-dessous.
- *)
-let rec print oc = function
-  | EInt n -> Printf.fprintf oc "%d" n
-  | EBool b -> Printf.fprintf oc "%s" (if b then "true" else "false")
-  | EIdent s -> Printf.fprintf oc "%s" s
-  | EString s -> Printf.fprintf oc "\"%s\"" s
-  | EApp (e1, e2) -> Printf.fprintf oc "(%a %a)" print e1 print e2
-  | ELet (f, e1, e2) ->
-      let (params, e) = params_body e1 in
-      Printf.fprintf oc "(let %s %a= %a in %a)"
-        f
-        (fun oc -> List.iter (fun s -> Printf.fprintf oc "%s " s)) params
-        print e
-        print e2
-  | ELetrec (f, x, e1, e2) ->
-      let (params, e) = params_body e1 in
-      Printf.fprintf oc "(let rec %s %s %a= %a in %a)"
-        f x
-        (fun oc -> List.iter (fun s -> Printf.fprintf oc "%s " s)) params
-        print e
-        print e2
-  | EFun (x, e) -> Printf.fprintf oc "(fun %s -> %a)"  x print e
-  | EIf (test, e1, e2) ->
-      Printf.fprintf oc "(if %a then %a else %a)" print test print e1 print e2
-  | EBinop (op,e1,e2) ->
-      Printf.fprintf oc "(%a %s %a)" print e1 op print e2
-  | EMonop (op,e) -> Printf.fprintf oc "%s%a" op print e
-;;
+(* Pour debug *)
+let rec print_expr oc = function
+  | ETitle title -> Printf.fprintf oc "Title: %s\n" title
+  | EComposer composer -> Printf.fprintf oc "Composer: %s\n" composer
+  | EArranger arranger -> Printf.fprintf oc "Arranger: %s\n" arranger
+  | E_BPM bpm -> Printf.fprintf oc "BPM: %d\n" bpm
+  | EInstrument instrument -> Printf.fprintf oc "Instrument: %s\n" instrument
+  | ENote note -> Printf.fprintf oc "Note: %s\n" note
+  | EChord expr_list -> 
+      Printf.fprintf oc "Chord: [\n";
+      List.iter (print_expr oc) expr_list;
+      Printf.fprintf oc "]\n"
+  | EPhrase expr_list -> 
+      Printf.fprintf oc "Phrase: [\n";
+      List.iter (print_expr oc) expr_list;
+      Printf.fprintf oc "]\n"
+  | ESheet (expr1, expr2) ->
+      Printf.fprintf oc "Sheet: (\n";
+      print_expr oc expr1;
+      Printf.fprintf oc ",\n";
+      print_expr oc expr2;
+      Printf.fprintf oc ")\n"
+  | EIdent ident -> Printf.fprintf oc "Ident: %s\n" ident
+  | ELet (name, expr) -> 
+      Printf.fprintf oc "Let: %s = (\n" name;
+      print_expr oc expr;
+      Printf.fprintf oc ")\n"
+  | ERepeat (expr, count) ->
+      Printf.fprintf oc "Repeat: (\n";
+      print_expr oc expr;
+      Printf.fprintf oc ", %d)\n" count
+  | EPrint str -> Printf.fprintf oc "Print: %s\n" str
+  | EPlay expr_list -> 
+      Printf.fprintf oc "Play: [\n";
+      List.iter (print_expr oc) expr_list;
+      Printf.fprintf oc "]\n"
+  ;;

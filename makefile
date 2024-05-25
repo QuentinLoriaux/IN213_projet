@@ -1,29 +1,30 @@
-CAMLC=$(BINDIR)ocamlc
+CAMLC=ocamlfind ocamlopt
 CAMLDEP=$(BINDIR)ocamldep
 CAMLLEX=$(BINDIR)ocamllex
 CAMLYACC=$(BINDIR)ocamlyacc
 # COMPFLAGS=-w A-4-6-9 -warn-error A -g
-COMPFLAGS=
+COMPFLAGS= -package pyml 
+FLAGS = -linkpkg 
 
-EXEC = pkloop
+EXEC = pkplayer
 
 # Fichiers compilés, à produire pour fabriquer l'exécutable
-SOURCES = pkast.ml pksem.ml pkloop.ml
+SOURCES = pkast.ml pkfluidapi.ml pkplay.ml 
 GENERATED = pklex.ml pkparse.ml pkparse.mli
 MLIS =
-OBJS = $(GENERATED:.ml=.cmo) $(SOURCES:.ml=.cmo)
+OBJS = $(GENERATED:.ml=.cmx) $(SOURCES:.ml=.cmx)
 
 # Building the world
 all: $(EXEC)
 
 $(EXEC): $(OBJS)
-	$(CAMLC) $(COMPFLAGS) $(OBJS) -o $(EXEC)
+	$(CAMLC) $(COMPFLAGS) $(FLAGS) $(OBJS) -o $(EXEC)
 
 .SUFFIXES:
 .SUFFIXES: .ml .mli .cmo .cmi .cmx
 .SUFFIXES: .mll .mly
 
-.ml.cmo:
+.ml.cmx:
 	$(CAMLC) $(COMPFLAGS) -c $<
 
 .mli.cmi:

@@ -8,39 +8,61 @@ convert = {'c': 0, 'd': 2, 'e': 4, 'f': 5, 'g' : 7, 'a' : 9, 'b' : 11}
 durations = [1/4, 1/2, 1.0, 2.0, 4.0]
 
 
-def decrypt(note):
-    global bpm
+def decipher(note):
+    global bpm, curr_octave, curr_duration
 
     # ==== Silence ====
     if note[0] == 'r':
-        return 0, durations[int(note[1])] * 60.0 / bpm 
+        if len(note) == 2: # Durée précisée
+            curr_duration = int(note[1])
+        return 0, durations[curr_duration] * 60.0 / bpm
+         
 
     # ==== Actual Note ====
-    height = 12 + int(note[1])*12 + convert[note[2]] 
-    if note[3] == '+':
+    index_cpt = 0
+    if note[0] == 'o': # octave précisé
+        index_cpt = 2 # indice de la lettre
+        curr_octave = int(note[1])
+    height = 12 + int(curr_octave)*12 + convert[note[index_cpt]] 
+
+    if note[index_cpt+1] == '+':
         height+=1
-    elif note[3]=='-':
+    elif note[index_cpt+1]=='-':
         height-=1
-    
-    if note[3] != '+' and note[3] != '-':
-        duration = durations[int(note[3])] * 60.0 / bpm 
     else:
-        duration = durations[int(note[4])] * 60.0 / bpm 
+        index_cpt -= 1 # indice avant la lettre (comme ça en faisant +2 on a la durée)
     
-    return height, duration
+    if len(note) == index_cpt + 3 : # Durée précisée
+        curr_duration = int(note[index_cpt+2])
+
+    return heigh, durations[curr_duration] * 60.0 /bpm
+
 
 # for i in range(num_events):
 #     scheduler.enter(0, 1, my_function, argument=(i,))
 
 def addNote(note):
-    global bpm, timeCursor
-    height, duration = decrypt(note)
-
+    global bpm, scheduler, timeCursor, channelCount, velocity
+    height, duration = decipher(note)
+    scheduler.enter(timeCursor,1,fs.noteon, argument=(channelCount, height, velocity))
+    scheduler.enter(timeCursor + duration,1,fs.noteoff, argument=(channelCount, height, velocity))
 
 def addSheet(instrument):
-    global fs
+    global fs, curr_duration, curr_octave, timeCursor, channelCount
+    
+    # Reset values
+    timeCursor = 0
+    curr_octave = 4
+    curr_duration = 0
+
+    # Change channel
     sfid = fs.sfload(instrument)
-    fs.program_select(0)
+    fs.program_select(channelCount, sfid, 0, 0)
+    channelCount += 1
+
+def runScheduler():
+    global scheduler
+    
 
 # def scheduler(notes):
 #     order = np.argsort([note[1] for note in notes])
@@ -52,7 +74,7 @@ def addSheet(instrument):
 
 # ======= Params =======
 bpm = 60
-timeCursor = 0
+
 
 instrument1 = './soundfonts/Salsa_Brass.sf2'
 instrument2 = './soundfonts/Yamaha_C3_Grand_Piano.sf2'
@@ -63,17 +85,23 @@ test = ['o4c0', 'o5c2', 'o5c4']
 fs = fluidsynth.Synth()
 fs.start( driver='alsa', midi_driver='alsa_seq')  
 fs.setting('synth.gain', 7.0)
+scheduler = sched.scheduler(time.time, time.sleep)
 
+timeCursor = 0
+channelCount = 0
+curr_octave = 4 # par défaut
+curr_duration = 0 # par défaut
+velocity = 70 # par défaut
+
+
+
+# ======= Traitement des notes =======
 sfid1 = fs.sfload(instrument1)
 fs.program_select(0, sfid1, 0, 0)
 sfid2 = fs.sfload(instrument2)
 fs.program_select(1, sfid2, 0, 0)
 
-scheduler = sched.scheduler(time.time, time.sleep)
-
-# ======= Traitement des notes =======
-
-notes = [decrypt(k, bpm) for k in test]
+notes = [decipher(k, bpm) for k in test]
 timers, order = scheduler(notes)
 print(timers)
 
