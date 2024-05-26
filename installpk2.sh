@@ -10,7 +10,7 @@ fi
 pip install pyfluidsynth
 
 # initialize opam
-opam init
+opam init -N
 
 # install pyml
 opam install pyml
