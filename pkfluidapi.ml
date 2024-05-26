@@ -26,41 +26,106 @@ Py.initialize ();;
 
 Py.Run.eval ~start:Py.File "
 import time
+import sched
 import fluidsynth
-import numpy as np
+
+# ======= Démarrage de fluidsynth =======
+
+fs = fluidsynth.Synth()
+fs.start( driver='alsa', midi_driver='alsa_seq')  
+fs.setting('synth.gain', 7.0)
+scheduler = sched.scheduler(time.time, time.sleep)
+
+timeCursor = 0
+channelCount = -1
+curr_octave = 4 # par défaut
+curr_duration = 0 # par défaut
+velocity = 70 # par défaut
+debug = 0
 
 # ========= Tools ==========
-
 convert = {'c': 0, 'd': 2, 'e': 4, 'f': 5, 'g' : 7, 'a' : 9, 'b' : 11}
 durations = [1/4, 1/2, 1.0, 2.0, 4.0]
 
-def decrypt(note, bpm):
-    height = 12 + int(note[1])*12 + convert[note[2]] 
-    if note[3] == '+':
+
+def decipher(note):
+    global bpm, curr_octave, curr_duration
+
+    # ==== Silence ====
+    if note[0] == 'r':
+        if len(note) == 2: # Durée précisée
+            if int(note[1]) > 4 :
+                raise Exception('Erreur : La durée doit être comprise entre 0 et 4')
+            return 0, durations[int(note[1])] * 60.0 / bpm # On ne modifie pas curr_duration pour un silence
+        return 0, durations[curr_duration] * 60.0 / bpm
+         
+
+    # ==== Actual Note ====
+    index_cpt = 0
+    if note[0] == 'o': # octave précisé
+        index_cpt = 2 # indice de la lettre
+        curr_octave = int(note[1])
+    height = 12 + int(curr_octave)*12 + convert[note[index_cpt]] 
+
+    if note[index_cpt+1] == '+':
         height+=1
-    elif note[3]=='-':
+    elif note[index_cpt+1]=='-':
         height-=1
-    
-    if note[3] != '+' and note[3] != '-':
-        duration = durations[int(note[3])] * 60.0 / bpm 
     else:
-        duration = durations[int(note[4])] * 60.0 / bpm 
+        index_cpt -= 1 # indice avant la lettre (comme ça en faisant +2 on a la durée)
     
-    return height, duration
+    if len(note) == index_cpt + 3 : # Durée précisée
+        if int(note[index_cpt+2]) > 4 :
+            raise Exception('Erreur : La durée doit être comprise entre 0 et 4')
+        curr_duration = int(note[index_cpt+2])
 
-def scheduler(notes):
-    order = np.argsort([note[1] for note in notes])
-    timers = [notes[order[0]][1]]
-    for k in range(len(notes)-1):
-        timers.append(notes[order[k+1]][1] - notes[order[k]][1])
-    return timers, order
+    return height, durations[curr_duration] * 60.0 /bpm
 
-def addNote(a):
-    print('added Note')
-def addSheet(a):
-    print('added sheet')
-def addChord(a):
-    print('added chord')
+
+def addNote(note):
+    global bpm, scheduler, timeCursor, channelCount, velocity
+    height, duration = decipher(note)
+    if height == 0 : # silence
+        timeCursor += duration
+    else:
+        scheduler.enter(timeCursor,1,fs.noteon, argument=(channelCount, height, velocity))
+        scheduler.enter(timeCursor + duration,1,fs.noteoff, argument=(channelCount, height))
+        timeCursor += durations[0] * 60.0 / bpm # CHOIX : la plus petite unité est la double croche
+    #il faut intercaler des silences entre les notes quitte à faire des phrases de silences de tailles prédéfinies 
+    #(différence durée note / durée entre les notes)
+
+
+def addChord(notes):
+    global bpm, scheduler, timeCursor, channelCount, velocity
+    for note in notes:
+        height, duration = decipher(note)
+        if height == 0 : # silence
+            raise Exception('Erreur : pas de silence dans les accords')
+        else:
+            scheduler.enter(timeCursor,1,fs.noteon, argument=(channelCount, height, velocity))
+            scheduler.enter(timeCursor + duration,1,fs.noteoff, argument=(channelCount, height))
+    timeCursor += durations[0] * 60.0 / bpm
+
+
+def addSheet(instrument):
+    global fs, curr_duration, curr_octave, timeCursor, channelCount
+    # Reset values
+    timeCursor = 0
+    curr_octave = 4
+    curr_duration = 0
+
+    # Change channel
+    channelCount += 1
+    sfid = fs.sfload(instrument)
+    fs.program_select(channelCount, sfid, 0, 0)
+    
+
+
+def runScheduler():
+    global scheduler
+    scheduler.run()
+
+print('Python launched')
 ";;
 
 (* =================== API ocaml/python =================== *)
@@ -69,8 +134,7 @@ let m = Py.Import.add_module "ocaml";;
 
 let send_bpm nb = Py.Module.set m "bpm" (Py.Int.of_int nb);
 let _ = Py.Run.eval ~start:Py.File "
-from ocaml import bpm
-print(bpm)" in ()
+from ocaml import bpm" in ()
 ;;
 
 let create_sheet s = Py.Module.set m "instrument" (Py.String.of_string s);
@@ -92,7 +156,7 @@ from ocaml import aNote
 addNote( aNote )" in ()
 ;;
 
-let play_music = let _ = Py.Run.eval ~start:Py.File "
+let play_music () = let _ = Py.Run.eval ~start:Py.File "
 runScheduler()" in ()
 ;;
 
@@ -102,96 +166,34 @@ runScheduler()" in ()
 let rec interpret env e = 
     match e with 
      | Pkast.EIdent s -> interpret env (lookup s env)
-     | Pkast.EPlay sheets -> let _ = List.iter (interpret env) sheets in play_music
+     | Pkast.EPlay sheets -> let _ = List.iter (interpret env) sheets in play_music ()
      | Pkast.ESheet (Pkast.EIdent ins, phrase) -> 
                 let _ =  match (lookup ins env) with 
-                    | Pkast.EInstrument s -> create_sheet s
-                    | _ -> error (Printf.sprintf "Wrong type for the instrument") in 
+                    | Pkast.EInstrument s -> create_sheet (if Sys.file_exists s then s else "./soundfonts/Yamaha_C3_Grand_Piano.sf2")
+                    | _ -> error (Printf.sprintf "Wrong type for the instrument%!") in 
                 interpret env phrase
-    | Pkast.EPhrase ph -> List.iter (interpret env) ph
-    | Pkast.EChord ch -> let notes = List.map note_to_string ch in send_chord notes
-    | Pkast.ENote n -> send_note n
+     | Pkast.EPhrase ph -> List.iter (interpret env) ph
+     | Pkast.EChord ch -> let notes = List.map note_to_string ch in send_chord notes
+     | Pkast.ENote n -> send_note n
                                 
      | Pkast.ERepeat (expr, nb) ->
          for i = 1 to nb  do interpret env expr done
-     | _ -> error (Printf.sprintf "semantic treatment went wrong")
+     | _ -> error (Printf.sprintf "semantic treatment went wrong%!")
 ;;
 
 
 let rec treat_expr e env = 
   match e with
   (* Affichage *)
-  | Pkast.ETitle s -> Printf.fprintf stdout "Title : %s\n" s
-  | Pkast.EComposer s -> Printf.fprintf stdout "Composer : %s\n" s
-  | Pkast.EArranger s -> Printf.fprintf stdout "Arranger : %s\n" s
-  | Pkast.E_BPM nb -> let _ = send_bpm nb in Printf.fprintf stdout "BPM : %d\n" nb
-  | Pkast.EPrint s -> Printf.fprintf stdout "%s\n" s
+  | Pkast.ETitle s -> Printf.fprintf stdout "Title : %s\n%!" s
+  | Pkast.EComposer s -> Printf.fprintf stdout "Composer : %s\n%!" s
+  | Pkast.EArranger s -> Printf.fprintf stdout "Arranger : %s\n%!" s
+  | Pkast.E_BPM nb -> let _ = send_bpm nb in Printf.fprintf stdout "BPM : %d\n%!" nb
+  | Pkast.EPrint s -> Printf.fprintf stdout "%s\n%!" s ; 
   
   (* Création des identificateurs *)
-  | Pkast.ELet (s, expr) -> extend env s expr (* ; Printf.fprintf stdout "%d\n" (List.length !env) *)
+  | Pkast.ELet (s, expr) -> extend env s expr 
 
   (* Interprétation du morceau *)
   | _ -> interpret env e
 ;;
-
-
-
-
-
-
-
-
-  (* Rien du tout *)
-
-let path_instrument = "toto";;
-let instrument = if Sys.file_exists path_instrument then path_instrument else "../soundfonts/Yamaha_C3_Grand_Piano.sf2";;
-
-
-
-
-
-
-Py.Run.eval ~start:Py.File "
-
-# ======= Params =======
-
-instrument = './soundfonts/Yamaha_C3_Grand_Piano.sf2'
-bpm = 60
-test = ['o4c0', 'o5c2', 'o5c4']
-
-# ======= Démarrage de fluidsynth =======
-
-fs = fluidsynth.Synth()
-fs.start( driver='alsa', midi_driver='alsa_seq')  
-fs.setting('synth.gain', 7.0)
-
-sfid = fs.sfload(instrument)
-fs.program_select(0, sfid, 0, 0)
-
-# ======= Traitement des notes =======
-
-notes = [decrypt(k, bpm) for k in test]
-timers, order = scheduler(notes)
-print(timers)
-
-for note in notes:
-    fs.noteon(0, note[0], 70)
-
-for k in range(len(notes)):
-    # time.sleep(timers[k])
-    fs.noteoff(0, notes[order[k]][0])
-"
-;;
-
-
-
-
-
-(* let () = Py.initialize () in
-let np = Py.import "numpy" in
-let plt = Py.import "matplotlib.pyplot" in
-let x = Py.Module.get_function np "arange"
-  (Array.map Py.Float.of_float [| 0.; 5.; 0.1 |]) in
-let y = Py.Module.get_function np "sin" [| x |] in
-ignore (Py.Module.get_function plt "plot" [| x; y |]);
-assert (Py.Module.get_function plt "show" [| |] = Py.none) *)

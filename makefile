@@ -41,7 +41,7 @@ clean:
 	rm -f *.cm[io] *.cmx *~ .*~ *.o
 	rm -f parser.mli
 	rm -f $(GENERATED)
-	rm -f $(EXEC)
+
 
 # Dependencies
 depend: $(SOURCES) $(GENERATED) $(MLIS)

@@ -1,0 +1,45 @@
+# TITLE "Super Mario Bros Theme";
+# COMPOSER "Koji Kondo";
+# ARRANGER "Chat GPT"; // Je n'ai pas retouché les sons, GPT a généré ceci à partir de la donnée de example.pk
+# BPM 90;
+// Oui, c'est erratique
+
+instrument piano = "../soundfonts/Yamaha_C3_Grand_Piano.sf2"; 
+
+// Define chords
+chord cMaj (o3c1 o3e1 o3g1);
+chord gMaj (o3g1 o3b1 o4d1);
+chord aMin (o3a1 o3c1 o3e1);
+chord fMaj (o3f1 o3a1 o3c1);
+
+// Define melody phrases
+phrase melody1 {
+    o4e2 o4e2 o4e2 r2 o4c2 o4e2 g2
+    r2 o3g2 r2 o3c2 o3g2 o4e2
+    o4a2 b2 o4a-2 o4g-2 r2
+    o4b2 o4a2 o4g2 r2
+};
+
+phrase melody2 {
+    o4e2 o4c2 o4d2 o4c2
+    o4b2 o4g2 o4a2 o4f2
+    o4e2 o4c2 o4d2 o4b2
+};
+
+// Define bass phrases
+phrase bass1 {
+    cMaj gMaj aMin fMaj
+    cMaj gMaj aMin fMaj
+};
+
+// Combine melody and bass into full sheet
+sheet full (piano) {
+    melody1 bass1
+    melody2 bass1
+    melody1 bass1
+    melody2 bass1
+};
+
+print "Playing Super Mario Bros Theme!";
+play(full);
+print "Finished playing!";

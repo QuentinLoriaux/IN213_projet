@@ -1,7 +1,7 @@
 import time
 import sched
 import fluidsynth
-import numpy as np
+
 
 # ========= Tools ==========
 convert = {'c': 0, 'd': 2, 'e': 4, 'f': 5, 'g' : 7, 'a' : 9, 'b' : 11}
@@ -35,17 +35,34 @@ def decipher(note):
     if len(note) == index_cpt + 3 : # Durée précisée
         curr_duration = int(note[index_cpt+2])
 
-    return heigh, durations[curr_duration] * 60.0 /bpm
+    return height, durations[curr_duration] * 60.0 /bpm
 
-
-# for i in range(num_events):
-#     scheduler.enter(0, 1, my_function, argument=(i,))
 
 def addNote(note):
     global bpm, scheduler, timeCursor, channelCount, velocity
     height, duration = decipher(note)
-    scheduler.enter(timeCursor,1,fs.noteon, argument=(channelCount, height, velocity))
-    scheduler.enter(timeCursor + duration,1,fs.noteoff, argument=(channelCount, height, velocity))
+    if height == 0 : # silence
+        timeCursor += duration
+    else:
+        scheduler.enter(timeCursor,1,fs.noteon, argument=(channelCount, height, velocity))
+        scheduler.enter(timeCursor + duration,1,fs.noteoff, argument=(channelCount, height))
+        timeCursor += durations[0] * 60.0 / bpm # CHOIX : la plus petite unité est la double croche
+    #il faut intercaler des silences entre les notes quitte à faire des phrases de silences de tailles prédéfinies 
+    #(différence durée note / durée entre les notes)
+    print(channelCount)
+
+
+def addChord(notes):
+    global bpm, scheduler, timeCursor, channelCount, velocity
+    for note in notes:
+        height, duration = decipher(note)
+        if height == 0 : # silence
+            raise Exception('Erreur : pas de silence dans les accords')
+        else:
+            scheduler.enter(timeCursor,1,fs.noteon, argument=(channelCount, height, velocity))
+            scheduler.enter(timeCursor + duration,1,fs.noteoff, argument=(channelCount, height))
+    timeCursor += durations[0] * 60.0 / bpm
+
 
 def addSheet(instrument):
     global fs, curr_duration, curr_octave, timeCursor, channelCount
@@ -56,29 +73,15 @@ def addSheet(instrument):
     curr_duration = 0
 
     # Change channel
+    channelCount += 1
     sfid = fs.sfload(instrument)
     fs.program_select(channelCount, sfid, 0, 0)
-    channelCount += 1
+    
+
 
 def runScheduler():
     global scheduler
-    
-
-# def scheduler(notes):
-#     order = np.argsort([note[1] for note in notes])
-#     timers = [notes[order[0]][1]]
-#     for k in range(len(notes)-1):
-#         timers.append(notes[order[k+1]][1] - notes[order[k]][1])
-#     return timers, order
-
-
-# ======= Params =======
-bpm = 60
-
-
-instrument1 = './soundfonts/Salsa_Brass.sf2'
-instrument2 = './soundfonts/Yamaha_C3_Grand_Piano.sf2'
-test = ['o4c0', 'o5c2', 'o5c4']
+    scheduler.run()
 
 # ======= Démarrage de fluidsynth =======
 
@@ -88,34 +91,32 @@ fs.setting('synth.gain', 7.0)
 scheduler = sched.scheduler(time.time, time.sleep)
 
 timeCursor = 0
-channelCount = 0
+channelCount = -1
 curr_octave = 4 # par défaut
 curr_duration = 0 # par défaut
 velocity = 70 # par défaut
 
 
 
-# ======= Traitement des notes =======
-sfid1 = fs.sfload(instrument1)
-fs.program_select(0, sfid1, 0, 0)
-sfid2 = fs.sfload(instrument2)
-fs.program_select(1, sfid2, 0, 0)
 
-notes = [decipher(k, bpm) for k in test]
-timers, order = scheduler(notes)
-print(timers)
 
-for note in notes:
-    fs.noteon(0, note[0], 70)
 
-for k in range(len(notes)):
-    time.sleep(timers[k])
-    fs.noteoff(0, notes[order[k]][0])
+# ======= tests =======
+bpm = 60
 
-for note in notes:
-    fs.noteon(1, note[0], 70)
 
-for k in range(len(notes)):
-    time.sleep(timers[k])
-    fs.noteoff(1, notes[order[k]][0])
+instrument1 = './soundfonts/Salsa_Brass.sf2'
+instrument2 = './soundfonts/Yamaha_C3_Grand_Piano.sf2'
+test = ['o4c0', 'o5c2', 'o5c4']
+
+addSheet(instrument1)
+addChord(test)
+addNote('r2')
+addNote('o4c4')
+addSheet(instrument2)
+addNote('r4')
+addChord(test)
+addNote('r2')
+addNote('o4c4')
+runScheduler()
 
