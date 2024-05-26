@@ -21,7 +21,7 @@ sheet mainDroite (piano) {
 sheet mainGauche (piano) {
     o3c2 g o4d o3g 
     o2b o3g b g
-
+    o2a o3d1 e a2
 };
 
 play(mainGauche);
