@@ -1,6 +1,6 @@
 # TITLE "Toto";
 # COMPOSER "Quentin Loriaux";
-# BPM 150;
+# BPM 180;
 
 
 instrument piano = "../soundfonts/Yamaha_C3_Grand_Piano.sf2"; // très agréable à l'oreille
@@ -21,7 +21,11 @@ sheet mainDroite (piano) {
 sheet mainGauche (piano) {
     o3c2 g o4d o3g 
     o2b o3g b g
-    o2a o3d1 e a2
+    o2a o3d1 e a2 e
+    o2g o3d (b g) e
+    o2f o3c a c
+    o2g o3d b
+
 };
 
 play(mainGauche);

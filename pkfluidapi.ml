@@ -116,7 +116,6 @@ def addChord(notes):
         else:
             scheduler.enter(timeCursor,1,fs.noteon, argument=(channelCount, height, velocity))
             scheduler.enter(timeCursor + duration,1,fs.noteoff, argument=(channelCount, height))
-    timeCursor += durations[0] * 60.0 / bpm
     delay_buffer = minDuration
 
 
