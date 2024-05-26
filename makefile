@@ -15,7 +15,10 @@ MLIS =
 OBJS = $(GENERATED:.ml=.cmx) $(SOURCES:.ml=.cmx)
 
 # Building the world
-all: $(EXEC)
+all: setup $(EXEC)
+
+setup :
+	-mkdir soundfonts
 
 $(EXEC): $(OBJS)
 	$(CAMLC) $(COMPFLAGS) $(FLAGS) $(OBJS) -o $(EXEC)

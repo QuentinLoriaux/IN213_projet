@@ -9,6 +9,9 @@ fi
 # install pyfluidsynth
 pip install pyfluidsynth
 
+# install keyboard listener
+pip install pynput
+
 # initialize opam
 opam init -N
 

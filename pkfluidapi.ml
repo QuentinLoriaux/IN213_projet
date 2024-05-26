@@ -28,6 +28,8 @@ Py.Run.eval ~start:Py.File "
 import time
 import sched
 import fluidsynth
+from pynput import keyboard
+import os
 
 # ======= Démarrage de fluidsynth =======
 
@@ -43,6 +45,16 @@ curr_duration = 0 # par défaut
 velocity = 70 # par défaut
 delay_buffer = 0 # par défaut
 debug = 0
+
+# ======= Démarrage du keyboard listener =======
+
+def quitEvent(key):
+    if key.char == 'q':
+        print('Fin anticipée du programme')
+        os._exit(0)
+
+listener = keyboard.Listener(on_press=quitEvent, ) # enregistrer le listener
+listener.start() # lancer le listener
 
 # ========= Tools ==========
 convert = {'c': 0, 'd': 2, 'e': 4, 'f': 5, 'g' : 7, 'a' : 9, 'b' : 11}

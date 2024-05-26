@@ -16,12 +16,13 @@ Le langage inclut :
 - Beaucoup de sucres syntaxiques similaires à ceux d'ALDA (on retient la durée et l'octave précédents entre les notes successives)
 - les **commentaires** sur une ligne ("//") ou sur tout un bloc (entouré de "'''")
 - Une fonction **print** pour afficher des messages entre deux parties du morceau.
+- On peut arrêter de manière anticipée la lecture d'un fichier en pressant 'q'.
 
 ## Règles
 
 - Toute expression finit par un ";".
 - Pour utiliser une soundfont (fichier .sf2 **compatible fluidsynth**), il faut stocker son chemin dans une variable instrument et utiliser l'identificateur dans une partition.
-- Une note s'écrit sous cette forme : \<note\> de a à g | \<octave\> de 0 à 7 | \<décalage\> dièse '+' ou bemol '-' | \<durée \> de 0 (double croche) à 4 (ronde) . Exemple : c4+'2 permet de jouer une C4# noire. c4'3 permet de jouer une C4 blanche.
+- Une note s'écrit sous cette forme : \<note\> de a à g | \<octave\> de 0 à 7 | \<décalage\> dièse '+' ou bemol '-' | \<durée \> de 0 (double croche) à 4  (ronde) (séparée par un "'" de la hauteur). Exemple : c4+'2 permet de jouer une C4# noire. c4'3 permet de jouer une C4 blanche.
 - \<octave\> et \<durée \> sont facultatifs, ils ont d'abord une valeur par défaut au début du morceau puis correspondent à l'octave/durée de la note précédente. Pas de raccourci pour les accords cependant.
 - Les notes des accords sont regroupées dans des parenthèses (pour la création des variables comme pour l'utilisation directe).
 - Les silences se notent "_" et sont des multiples d'1/16e de note. 4* 1/16e de silence peut s'écrire : "____" ou "_4" ou "_*4".
