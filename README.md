@@ -77,7 +77,7 @@ play(mainDroite);
 
 ## Installation
 
-- Un script .sh permet d'installer le langage sous linux.
+- Lancer installpk1.sh en root puis lancer installpk2.sh PAS en root.
 - lancer la commande "make" (puis "make clean" parce que quand même ça fait beaucoup de fichiers...)
 - Il est conseillé de [télécharger](https://musical-artifacts.com/artifacts?apps=fluidsynth) quelques soundfonts à mettre dans un dossier dont on indiquera le chemin.
 

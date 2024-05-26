@@ -2,15 +2,16 @@
 # COMPOSER "Nobuo Uematsu";
 # ARRANGER "K Kobayashi";
 # BPM 180;
-//# BPM 300;
+// # BPM 500;
 
-instrument piano = "../soundfonts/Yamaha_C3_Grand_Piano.sf2"; // très agréable à l'oreille
+instrument piano = "../soundfonts/Yamaha_C3_Grand_Piano.sf2"; 
+//instrument piano = "./soundfonts/Salsa_Brass.sf2"; 
 
 chord accord1 (a1+'1 b2'2 c3-'3);
 chord accord2 (a4'1 a5'1 c6'1);
 
 phrase gauche1 {
-    c3'2 g d4 g3 
+    c3'2 g d4 g3 // On joue par défaut en legato
     b2 g3 b g
     a2 d3'1 e a'2 e
     g2 d3 (b g) e
@@ -31,8 +32,13 @@ phrase gauche2 {
 };
 
 sheet mainDroite (piano) {
-    e4'3 g d | e'2 f e d c _22
-    a'0 g a'2 //_4 //a// g //d //e //f //e
+    e4'3 g d 
+    e'2 f e d c _22
+    a'0 g a'4 _12 // trille
+    a'2 g d e f e _15
+    e _3 f+ _3 g+ _3 a _3 b | e'3_a_c5 | // arpège
+    _10 c5'2 | f4'3_a_c5 // arpège
+
 
 };
 

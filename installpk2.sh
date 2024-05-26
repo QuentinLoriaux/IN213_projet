@@ -1,28 +1,16 @@
 #!/bin/bash
 
-# Check if user is root
-if [ "$(id -u)" != "0" ]; then
-    echo "This script must be run as root" 1>&2
+# Check if user is not root
+if [ "$(id -u)" -eq "0" ]; then
+    echo "This script must not be run as root" 1>&2
     exit 1
 fi
-
-# Update package lists
-apt update
-
-# install python3
-apt install python3 -y
-
-# install pip
-apt install python3-pip -y
 
 # install pyfluidsynth
 pip install pyfluidsynth
 
-# install ocaml
-apt install ocaml -y
-
-# install opam
-apt install opam -y
+# initialize opam
+opam init
 
 # install pyml
 opam install pyml
