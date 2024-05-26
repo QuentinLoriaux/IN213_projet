@@ -4,32 +4,32 @@
 # BPM 140;
 // Oui, c'est erratique
 
-instrument piano = "../soundfonts/Yamaha_C3_Grand_Piano.sf2"; 
+instrument piano = "../soundfonts/yamaha_c3_grand_piano.sf2"; 
 
 // Define chords
-chord cMaj (o3c1 o3e1 o3g1);
-chord gMaj (o3g1 o3b1 o4d1);
-chord aMin (o3a1 o3c1 o3e1);
-chord fMaj (o3f1 o3a1 o3c1);
+chord cmaj (c3'1 e3 g3);
+chord gmaj (g3'1 b3 d4);
+chord amin (a3'1 c4 e4);
+chord fmaj (f3'1 a3 c4);
 
 // Define melody phrases
 phrase melody1 {
-    o4e2 o4e2 o4e2 __ o4c2 o4e2 g2
-    __ o3g2 __ o3c2 o3g2 o4e2
-    o4a2 b2 o4a-2 o4g-2 __
-    o4b2 o4a2 o4g2 __
+    e4'2 e4'2 e4'2 __ c4'2 e4'2 g4'2
+    __ g3'2 __ c4'2 g3'2 e4'2
+    a4'2 b4'2 a4-'2 g4-'2 __
+    b4'2 a4'2 g4'2 __
 };
 
 phrase melody2 {
-    o4e2 o4c2 o4d2 o4c2
-    o4b2 o4g2 o4a2 o4f2
-    o4e2 o4c2 o4d2 o4b2
+    e4'2 c4'2 d4'2 c4'2
+    b3'2 g3'2 a3'2 f3'2
+    e4'2 c4'2 d4'2 b3'2
 };
 
 // Define bass phrases
 phrase bass1 {
-    cMaj gMaj aMin fMaj
-    cMaj gMaj aMin fMaj
+    cmaj gmaj amin fmaj
+    cmaj gmaj amin fmaj
 };
 
 // Combine melody and bass into full sheet
@@ -40,6 +40,6 @@ sheet full (piano) {
     melody2 bass1
 };
 
-print "Playing Super Mario Bros Theme!";
+print "playing super mario bros theme!";
 play(full);
-print "Finished playing!";
+print "finished playing!";

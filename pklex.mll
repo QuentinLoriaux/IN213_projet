@@ -80,7 +80,7 @@ rule lex = parse
         lex lexbuf } (* sauter les retours a la ligne + garde trace de la ligne courante. *)
   | ['0'-'9']+ as lxm
       { INT(int_of_string lxm) }
-  | ('o' ['0'-'9'])? ['a'-'g'] ('+'|'-')? ['0'-'9']? as lxm
+  | ['a'-'g'] ['0'-'9']? ('+'|'-')? ('\''['0'-'9'])? as lxm
     {NOTE(lxm) } (* Note de la forme : o2a+3 : octave, note, dièse/bemol, durée *)
   | ('_' ['0'-'9']+) | (['_']+) as lxm
     {NOTE(lxm) } (* Silence de la forme :  *)

@@ -66,6 +66,29 @@ def decipher(note):
 
     # ==== Actual Note ====
     index_cpt = 0
+    height = 0
+    if len(note)>1 :
+        if note[1].isdigit() : # octave précisé
+            index_cpt = 1 # pointe l'octave
+            curr_octave = int(note[1])
+        
+        if len(note) > index_cpt +1 : # nuance hauteur ou durée
+            if note[index_cpt +1] == '+':
+                height +=1
+                index_cpt += 1 # pointe +
+            elif note[index_cpt +1] == '-':
+                height -=1
+                index_cpt += 1
+
+            if len(note) > index_cpt +1 : # durée précisée
+                if int(note[index_cpt+2]) > 4 :
+                    raise Exception('Erreur : La durée doit être comprise entre 0 et 4')
+                curr_duration = int(note[index_cpt+2])
+    
+    height += 12 + int(curr_octave)*12 + convert[note[0]] 
+    return height, durations[curr_duration] * 60.0 /bpm
+
+    '''
     if note[0] == 'o': # octave précisé
         index_cpt = 2 # indice de la lettre
         curr_octave = int(note[1])
@@ -87,7 +110,7 @@ def decipher(note):
         curr_duration = int(note[index_cpt+2])
 
     return height, durations[curr_duration] * 60.0 /bpm
-
+    '''
 
 def addNote(note):
     global bpm, scheduler, timeCursor, channelCount, velocity, delay_buffer
