@@ -1,6 +1,6 @@
 # TITLE "Toto";
 # COMPOSER "Quentin Loriaux";
-# BPM 120;
+# BPM 150;
 
 
 instrument piano = "../soundfonts/Yamaha_C3_Grand_Piano.sf2"; // très agréable à l'oreille
@@ -19,12 +19,9 @@ sheet mainDroite (piano) {
 };
 
 sheet mainGauche (piano) {
-    accord2 _ melodie1
+    o3c2 g o4d o3g 
+    o2b o3g b g
+
 };
 
-// Interprétation de la musique
-print "pressKey va vous jouer quelques sons dissonants";
-play(mainGauche, mainDroite); //jouées simultanément
-
-print "Il en reste encore un peu...";
-play(mainDroite);
+play(mainGauche);

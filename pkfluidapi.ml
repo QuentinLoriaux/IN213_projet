@@ -52,7 +52,7 @@ durations = [1/4, 1/2, 1.0, 2.0, 4.0]
 def decipher(note):
     global bpm, curr_octave, curr_duration
     # CHOIX : la plus petite unité de durée est la double croche = 1/16e de note
-
+    print(note)
     # ==== Silence ====
     if note[0] == '_':
         if len(note) >= 2: 
@@ -71,10 +71,13 @@ def decipher(note):
         curr_octave = int(note[1])
     height = 12 + int(curr_octave)*12 + convert[note[index_cpt]] 
 
-    if note[index_cpt+1] == '+':
-        height+=1
-    elif note[index_cpt+1]=='-':
-        height-=1
+    if len(note) > 1 + index_cpt:
+        if note[index_cpt+1] == '+':
+            height+=1
+        elif note[index_cpt+1]=='-':
+            height-=1
+        else:
+            index_cpt -= 1
     else:
         index_cpt -= 1 # indice avant la lettre (comme ça en faisant +2 on a la durée)
     

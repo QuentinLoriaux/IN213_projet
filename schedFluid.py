@@ -2,6 +2,15 @@ import time
 import sched
 import fluidsynth
 
+'''
+
+Programme de Test et debug
+=========== PAS A JOUR =============
+               /!\ 
+
+'''
+
+
 # ======= Démarrage de fluidsynth =======
 
 fs = fluidsynth.Synth()
