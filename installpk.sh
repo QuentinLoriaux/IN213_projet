@@ -18,11 +18,17 @@ apt install python3-pip -y
 # install pyfluidsynth
 pip install pyfluidsynth
 
+# install ocaml
+apt install ocaml -y
+
 # install opam
 apt install opam -y
 
 # install pyml
 opam install pyml
+
+# install ocamlfind
+opam install ocamlfind
 
 # load opam env in current terminal
 eval $(opam env --switch=default)
