@@ -24,8 +24,9 @@ eval $(opam env --switch=default)
 # initialize opam environment every time terminal opens
 echo "eval \$(opam env --switch=default)" >> ~/.bashrc
 
-# generate the interpreter
+# generate the interpreter & clean repository
 make
+make clean
 
 # done!
 echo "PressKey successfully (hopefully) installed!"
