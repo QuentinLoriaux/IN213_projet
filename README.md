@@ -24,6 +24,8 @@ Le langage inclut :
 - Une note s'écrit sous cette forme : \<octave\> de 0 à 7 | \<note\> de a à g | \<décalage\> dièse '+' ou bemol '-' | \<durée \> de 0 (double croche) à 4 (ronde) . Exemple : 'o4c+2' permet de jouer une C4# noire. 'o4c3' permet de jouer une C4 blanche.
 - \<octave\> et \<durée \> sont facultatifs, ils ont d'abord une valeur par défaut au début du morceau puis correspondent à l'octave/durée de la note précédente. Pas de raccourci pour les accords cependant.
 - Les notes des accords sont regroupées dans des parenthèses (pour la création des variables comme pour l'utilisation directe).
+- Les silences se notent "_" et sont des multiples d'1/16e de note. 4* 1/16e de silence peut s'écrire : "____" ou "_4" ou "_*4".
+- Par défaut, pour 2 notes successives, la 2e commence quand la 1ère termine. La 2e peut commencer plus tôt si on introduit un silence entre les deux. Pour les accords, la note suivante commence quand la plus courte note termine. 
 - On peut imbriquer des phrases dans des phrases et les utiliser dans les sheets.
 - La durée des notes et l'espacement entre chaque note est calculée à l'aide du BPM
 - pour jouer les partitions (sheets), on les entre en paramètre de "play". Elles sont alors jouées simultanément. Les différents "play" sont joués séquentiellement.

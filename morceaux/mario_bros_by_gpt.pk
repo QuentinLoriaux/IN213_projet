@@ -1,7 +1,7 @@
 # TITLE "Super Mario Bros Theme";
 # COMPOSER "Koji Kondo";
 # ARRANGER "Chat GPT"; // Je n'ai pas retouché les sons, GPT a généré ceci à partir de la donnée de example.pk
-# BPM 90;
+# BPM 140;
 // Oui, c'est erratique
 
 instrument piano = "../soundfonts/Yamaha_C3_Grand_Piano.sf2"; 
@@ -14,10 +14,10 @@ chord fMaj (o3f1 o3a1 o3c1);
 
 // Define melody phrases
 phrase melody1 {
-    o4e2 o4e2 o4e2 r2 o4c2 o4e2 g2
-    r2 o3g2 r2 o3c2 o3g2 o4e2
-    o4a2 b2 o4a-2 o4g-2 r2
-    o4b2 o4a2 o4g2 r2
+    o4e2 o4e2 o4e2 __ o4c2 o4e2 g2
+    __ o3g2 __ o3c2 o3g2 o4e2
+    o4a2 b2 o4a-2 o4g-2 __
+    o4b2 o4a2 o4g2 __
 };
 
 phrase melody2 {

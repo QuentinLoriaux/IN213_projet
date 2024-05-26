@@ -41,6 +41,7 @@ channelCount = -1
 curr_octave = 4 # par défaut
 curr_duration = 0 # par défaut
 velocity = 70 # par défaut
+delay_buffer = 0 # par défaut
 debug = 0
 
 # ========= Tools ==========
@@ -50,14 +51,17 @@ durations = [1/4, 1/2, 1.0, 2.0, 4.0]
 
 def decipher(note):
     global bpm, curr_octave, curr_duration
+    # CHOIX : la plus petite unité de durée est la double croche = 1/16e de note
 
     # ==== Silence ====
-    if note[0] == 'r':
-        if len(note) == 2: # Durée précisée
-            if int(note[1]) > 4 :
-                raise Exception('Erreur : La durée doit être comprise entre 0 et 4')
-            return 0, durations[int(note[1])] * 60.0 / bpm # On ne modifie pas curr_duration pour un silence
-        return 0, durations[curr_duration] * 60.0 / bpm
+    if note[0] == '_':
+        if len(note) >= 2: 
+            if note[1] == '_':
+                return 0, durations[0]*len(note) * 60.0 / bpm
+            else :
+                return 0, durations[0]*int(note[1:]) * 60.0 /bpm
+        return 0, durations[0] * 60.0 / bpm 
+    # On ne modifie pas curr_duration pour un silence
          
 
     # ==== Actual Note ====
@@ -83,28 +87,34 @@ def decipher(note):
 
 
 def addNote(note):
-    global bpm, scheduler, timeCursor, channelCount, velocity
+    global bpm, scheduler, timeCursor, channelCount, velocity, delay_buffer
     height, duration = decipher(note)
     if height == 0 : # silence
         timeCursor += duration
+        delay_buffer = 0
     else:
+        timeCursor += delay_buffer
         scheduler.enter(timeCursor,1,fs.noteon, argument=(channelCount, height, velocity))
         scheduler.enter(timeCursor + duration,1,fs.noteoff, argument=(channelCount, height))
-        timeCursor += durations[0] * 60.0 / bpm # CHOIX : la plus petite unité est la double croche
-    #il faut intercaler des silences entre les notes quitte à faire des phrases de silences de tailles prédéfinies 
+        delay_buffer = duration # dans le cas où le prochain serait une note
+    # par défaut, la note commence quand la précédente se termine. Un silence peut remplacer ce comportement
     #(différence durée note / durée entre les notes)
 
 
 def addChord(notes):
-    global bpm, scheduler, timeCursor, channelCount, velocity
+    global bpm, scheduler, timeCursor, channelCount, velocity, delay_buffer
+    timeCursor += delay_buffer
+    minDuration = 100
     for note in notes:
         height, duration = decipher(note)
+        minDuration = min(minDuration, duration)
         if height == 0 : # silence
             raise Exception('Erreur : pas de silence dans les accords')
         else:
             scheduler.enter(timeCursor,1,fs.noteon, argument=(channelCount, height, velocity))
             scheduler.enter(timeCursor + duration,1,fs.noteoff, argument=(channelCount, height))
     timeCursor += durations[0] * 60.0 / bpm
+    delay_buffer = minDuration
 
 
 def addSheet(instrument):
