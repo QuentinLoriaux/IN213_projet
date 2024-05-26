@@ -40,6 +40,7 @@ expr:
 
 repeat:
   | expr REPEAT INT {ERepeat($1, $3)}
+  | LPAR chordnotes RPAR REPEAT INT {ERepeat(EChord($2), $5)}
 ;
 
 createvars:

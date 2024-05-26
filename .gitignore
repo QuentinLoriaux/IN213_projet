@@ -1,4 +1,4 @@
-soundfonts/*
+# soundfonts/*
 *.cmi
 *.cmo
 *.cmx

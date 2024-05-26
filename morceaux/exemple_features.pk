@@ -1,0 +1,61 @@
+# TITLE "Exemple des features";
+# COMPOSER "Quentin Loriaux";
+# BPM 180;
+// # BPM 240;
+
+instrument guitar = "./soundfonts/electric_guitar.sf2"; 
+instrument piano = "./soundfonts/Yamaha_C3_Grand_Piano.sf2"; 
+
+
+// ========== Exemple 1 ==========
+
+phrase gamme {// octave/durée  non imposés
+    d e f g a b
+};
+
+phrase gamme2 {// Ici, tout est imposé par la 1ère note
+    c3'1 gamme c4
+};
+
+sheet phraseEx (piano) { // exploite la mémorisation de la note précédente
+    c4'2 gamme c5 _10
+    c5 gamme c6 _10
+    c4'0 gamme c5 ____
+    gamme2_gamme2 _10
+    gamme2*3 _10 //répétition
+};
+
+// ========== Exemple 2 ==========
+
+chord acc1 (g3'2 c4 e); 
+chord acc2 (d f+ a); // octave / durée non imposés
+
+sheet chordsEx (piano){ // exploite les répétitions
+    c4*3 acc1*3 (c5'3 e) (d3 f)*2
+    _20 c4 acc2 c5 acc2 c6 acc2
+};
+
+
+
+// ========== Exemple 3 ==========
+
+sheet combo1 (piano){
+    _31
+    g4'2 a+'1 a'2 c5'1 a4+'2 d5'1 c'2 d+'1 d
+};
+
+phrase bassLine {g2'1*6 f*2};
+
+sheet combo2 (guitar) {
+    bassLine*4
+};
+
+
+// ========== Execution ==========
+
+print "exemple avec phrases";
+play(phraseEx);
+print "exemple avec accords";
+play(chordsEx);
+print "exemple avec 2 instruments";
+play(combo1, combo2);

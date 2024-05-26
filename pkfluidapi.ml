@@ -49,9 +49,12 @@ debug = 0
 # ======= Démarrage du keyboard listener =======
 
 def quitEvent(key):
-    if key.char == 'q':
-        print('Fin anticipée du programme')
-        os._exit(0)
+    try:
+        if key.char == 'q':
+            print('Fin anticipée du programme')
+            os._exit(0)
+    except AttributeError:
+            pass
 
 listener = keyboard.Listener(on_press=quitEvent) # enregistrer le listener
 listener.start() # lancer le listener
