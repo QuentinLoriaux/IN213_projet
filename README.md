@@ -50,21 +50,21 @@ Création de variables réutilisables
 
 instrument piano = "../soundfonts/Yamaha_C3_Grand_Piano.sf2"; // très agréable à l'oreille
 
-chord accord1 (o1a+1 o2b2 o4c-3);
-chord accord2 (o4a1 o5a1 o6c1);
+chord accord1 (a1+'1 b2'2 c3-'3);
+chord accord2 (a4'1 a5'1 c6'1);
 
 phrase melodie1 {
-    accord1 o2a+1 b- o3g4*2
-    accord2 r1 (o4c3 o3c2 o5c2) 
+    accord1 a2+'1 b- g3'4*2
+    accord2 _ (c4'3 c3'2 c5'2) 
 };
 
 sheet mainDroite (piano) {
-    // r1 melodie1 r1 accord1*2 melodie1*2 // ceci est commenté
+    // _ melodie1 _ accord1*2 melodie1*2 // ceci est commenté
     accord2 accord2 accord2
 };
 
 sheet mainGauche (piano) {
-    accord2 r1 melodie1
+    accord2 _ melodie1
 };
 
 // Interprétation de la musique
