@@ -143,11 +143,12 @@ def addChord(notes):
 
 
 def addSheet(instrument):
-    global fs, curr_duration, curr_octave, timeCursor, channelCount
+    global fs, curr_duration, curr_octave, timeCursor, channelCount, delay_buffer
     # Reset values
     timeCursor = 0
     curr_octave = 4
     curr_duration = 0
+    delay_buffer = 0
 
     # Change channel
     channelCount += 1

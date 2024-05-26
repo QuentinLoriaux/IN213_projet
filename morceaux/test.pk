@@ -1,24 +1,15 @@
-# TITLE "Toto";
-# COMPOSER "Quentin Loriaux";
-//# BPM 180;
-# BPM 300;
+# TITLE "Final Fantasy I - town";
+# COMPOSER "Nobuo Uematsu";
+# ARRANGER "K Kobayashi";
+# BPM 180;
+//# BPM 300;
 
 instrument piano = "../soundfonts/Yamaha_C3_Grand_Piano.sf2"; // très agréable à l'oreille
 
 chord accord1 (a1+'1 b2'2 c3-'3);
 chord accord2 (a4'1 a5'1 c6'1);
 
-phrase melodie1 {
-    accord1 a2+'1 b- g3'4*2
-    accord2 _ (c4'3 c3'2 c5'2) 
-};
-
-sheet mainDroite (piano) {
-    // _ melodie1 _ accord1*2 melodie1*2 // ceci est commenté
-    accord2 accord2 accord2
-};
-
-sheet mainGauche (piano) {
+phrase gauche1 {
     c3'2 g d4 g3 
     b2 g3 b g
     a2 d3'1 e a'2 e
@@ -28,9 +19,27 @@ sheet mainGauche (piano) {
     c d4 g3 c4
     e3 g+ b g+
 
-    a2 e3 c4
+    a2 e3 c4 e3
+    d a d4 _8
+    g2 d3 b d
+    c g e a2 a+'4 _4 f3'2 g f 
+};
 
+phrase gauche2 {
+    a2+'2 c3 d 
+    g2 d3 g a (b g2'3) _4 a3'2 g d 
+};
+
+sheet mainDroite (piano) {
+    e4'3 g d | e'2 f e d c _22
+    a'0 g a'2 //_4 //a// g //d //e //f //e
 
 };
 
-play(mainGauche);
+sheet mainGauche (piano) {
+    gauche1 d'3  _4 gauche2
+    gauche1 d4'3 _4 gauche2
+
+};
+
+play(mainDroite, mainGauche);
