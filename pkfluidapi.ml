@@ -53,7 +53,7 @@ def quitEvent(key):
         print('Fin anticipée du programme')
         os._exit(0)
 
-listener = keyboard.Listener(on_press=quitEvent, ) # enregistrer le listener
+listener = keyboard.Listener(on_press=quitEvent) # enregistrer le listener
 listener.start() # lancer le listener
 
 # ========= Tools ==========

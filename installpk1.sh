@@ -21,5 +21,8 @@ apt install ocaml -y
 # install opam
 apt install opam -y
 
+# install alsa
+apt install alsa-base -y
+
 # upgrade packages
 apt upgrade
