@@ -92,3 +92,6 @@ Pour programmer la succession des notes, je lis au fur et à mesure les partitio
 
 Petite différence avec le cours : je me suis familiarisé avec le gestionnaire de paquets ocaml [opam](https://opam.ocaml.org/) pour facilement installer pyml, et cela m'a aussi conduit à essayer le compilateur ocamlopt au lieu d'ocamlc, pour de meilleures performances au prix de la portabilité (il produit du ncode natif au lieu de bytecode). Je suis convaincu que ça ne fera pas de différence pour ce projet.
 
+## Notes
+
+Selon la distribution de l'utilisateur, il peut y avoir des problèmes avec la librairie pynput (pour quitter), et à ce moment là, faire Ctrl+C pour quitter le programme. 
