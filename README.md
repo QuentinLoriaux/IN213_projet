@@ -95,3 +95,11 @@ Petite différence avec le cours : je me suis familiarisé avec le gestionnaire 
 ## Notes
 
 Selon la distribution de l'utilisateur, il peut y avoir des problèmes avec la librairie pynput (pour quitter), et à ce moment là, faire Ctrl+C pour quitter le programme. 
+
+## soundfonts utilisés dans les exemples : 
+
+- soundfonts/BurningGrooves.sf2
+- soundfonts/electric_guitar.sf2
+- soundfonts/Nice-Bass-Plus-Drums-v5.3.sf2
+- soundfonts/Strings-4U-v1.0.sf2
+- soundfonts/Yamaha_C3_Grand_Piano.sf2

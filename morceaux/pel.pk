@@ -1,0 +1,109 @@
+# TITLE "Essai 1";
+# COMPOSER "PE Loriaux";
+# BPM 120;
+// # BPM 500;
+
+// instrument ipiano = "../soundfonts/Yamaha_C3_Grand_Piano.sf2"; 
+
+instrument ipiano = "../soundfonts/Strings-4U-v1.0.sf2";
+instrument drums = "./soundfonts/BurningGrooves.sf2"; 
+instrument ibass1 = "./soundfonts/Nice-Bass-Plus-Drums-v5.3.sf2";
+
+
+
+phrase gauche1 {
+    c3'1 c c+ c d+ c f d+
+};
+
+//  c2'4 c+ d d+ e f f+ g g+ a a+ b
+
+phrase drum1 {
+   c2'2 d2'1 c2'2 c2'1 d2'2
+};
+
+phrase drum3 {
+   c2'2 d2'1 c2'2 a3'2 d'1
+};
+
+phrase drum4 {
+   c2'2 e'1 c'2 c'0 c e'1 c  
+};
+
+phrase drum5 {
+  _4 e2'0 e e e e e e e
+};
+
+phrase drum2 {
+   f2+'1 f+ f+ f+
+   f+ f+ d3+ f2+
+};
+
+phrase bass1 {
+   c2'1 c3 c2 c3 c2 c3 c2 c3
+   c2 c3 c2 c3 f1'1 f2 g1 g2 
+
+};
+phrase bass2 {
+  a1+'1 a+ a+ a+ a+ a+ a g+
+  g1+'4 _8
+  _16
+
+};
+
+chord accord1 (e5'1 c g);
+chord accord2 (g5'2 c6 e6);
+
+phrase piano1 {
+
+  d6'0_e6_c'1
+  a5 g _4
+  accord2
+  f5'1
+  accord1
+
+};
+
+phrase piano2 {
+  c5'1 d e f'2
+  f'1 e d+ d'2
+};
+
+phrase gauche2 {
+    a2+'2 c3 d 
+    g2 d3 g a (b g2'3) _4 a3'2 g d
+};
+
+sheet mainDroite (ipiano) {
+    e4'3 g d 
+    e'2 f e d c _22
+    a'0 g a'4 _12 // trille
+    a'2 g d e f e _15
+    e _3 f+ _3 g+ _3 a _3 b | e'3_a_c5 | // arpège
+    _10 c5'2 | f4'3_a_c5 // arpège
+};
+
+
+sheet rythm1 (drums) {
+    _3 drum1 drum4 drum1 drum4
+    drum1 drum1 drum1 drum1 drum3
+    _62 drum5 drum1 drum4 drum1 drum4
+};
+
+sheet rythm2 (drums) {
+  _3 drum2 drum2 drum2 drum2
+  drum2 drum2 drum2 drum2
+  _106 drum2 drum2 drum2
+};
+
+sheet bassg (ibass1) {
+  _3 _16 bass1 bass1 bass1 bass1 bass2
+  bass1 bass1 bass1 bass2
+};
+
+sheet mpiano (ipiano) {
+ _3 _16 _64 piano1 _16 piano1 _16 piano2
+};
+
+// play(mainDroite, mainGauche);
+
+play(rythm1, rythm2, bassg, mpiano);
