@@ -13,7 +13,7 @@ pip install pyfluidsynth
 pip install pynput
 
 # initialize opam
-opam init -N
+opam init
 
 # install pyml
 opam install pyml
